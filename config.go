@@ -4,17 +4,17 @@ import "github.com/fatih/color"
 
 type customizer interface {
 	EmptyColor(color.Attribute) customizer
-	Empty(byte) customizer
+	EmptyChar(byte) customizer
 	RulerTextColor(color.Attribute) customizer
-	Hit(byte) customizer
+	HitChar(byte) customizer
 	HitColor(color.Attribute) customizer
-	Miss(byte) customizer
+	MissChar(byte) customizer
 	MissColor(color.Attribute) customizer
-	Ship(byte) customizer
+	ShipChar(byte) customizer
 	ShipColor(color.Attribute) customizer
-	Border(byte) customizer
+	BorderChar(byte) customizer
 	BorderColor(color.Attribute) customizer
-	Commit() *config
+	NewConfig() *config
 }
 
 type config struct {
@@ -31,7 +31,7 @@ type config struct {
 	borderColor    color.Attribute
 }
 
-func (c *config) Commit() *config {
+func (c *config) NewConfig() *config {
 	return c
 }
 
@@ -45,17 +45,17 @@ func (c *config) ShipColor(col color.Attribute) customizer {
 	return c
 }
 
-func (c *config) Ship(n byte) customizer {
+func (c *config) ShipChar(n byte) customizer {
 	c.shipChar = n
 	return c
 }
 
-func (c *config) Empty(n byte) customizer {
+func (c *config) EmptyChar(n byte) customizer {
 	c.emptyChar = n
 	return c
 }
 
-func (c *config) Border(n byte) customizer {
+func (c *config) BorderChar(n byte) customizer {
 	c.borderChar = n
 	return c
 }
@@ -65,7 +65,7 @@ func (c *config) BorderColor(col color.Attribute) customizer {
 	return c
 }
 
-func (c *config) Hit(n byte) customizer {
+func (c *config) HitChar(n byte) customizer {
 	c.hitChar = n
 	return c
 }
@@ -75,7 +75,7 @@ func (c *config) HitColor(col color.Attribute) customizer {
 	return c
 }
 
-func (c *config) Miss(n byte) customizer {
+func (c *config) MissChar(n byte) customizer {
 	c.missChar = n
 	return c
 }
@@ -90,18 +90,22 @@ func (c *config) RulerTextColor(col color.Attribute) customizer {
 	return c
 }
 
-func NewConfig() customizer {
+func NewConfig() *config {
 	return &config{
 		emptyChar:      ' ',
 		emptyColor:     color.BgBlack,
 		rulerTextColor: color.BgBlue,
 		shipChar:       'X',
 		shipColor:      color.FgCyan,
-		borderChar:     ' ',
-		borderColor:    color.BgRed,
+		borderChar:     'x',
+		borderColor:    color.FgRed,
 		hitChar:        'X',
 		hitColor:       color.FgRed,
 		missChar:       '.',
-		missColor:      color.FgGreen,
+		missColor:      color.FgRed,
 	}
+}
+
+func ConfigParams() customizer {
+	return NewConfig()
 }
