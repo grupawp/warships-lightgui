@@ -101,27 +101,22 @@ func (b *board) Display() {
 
 	for y := maxY - 1; y >= 0; y-- {
 		for x := 0; x < maxX; x++ {
-			s := b.b[x][y]
-			if s == Ruler {
+			switch s := b.b[x][y]; s {
+			case Ruler:
 				c := color.New(b.c.rulerTextColor)
 				c.Printf("%2d", y+1)
-			}
-			if s == Empty {
+			case Empty:
 				fmt.Printf("  ")
-			}
-			if s == Hit {
+			case Hit:
 				c := color.New(b.c.hitColor)
 				c.Printf(" %s", b.printChar(s))
-			}
-			if s == Ship {
+			case Ship:
 				c := color.New(b.c.shipColor)
 				c.Printf(" %s", b.printChar(s))
-			}
-			if s == Miss {
+			case Miss:
 				c := color.New(b.c.missColor)
 				c.Printf(" %s", b.printChar(s))
-			}
-			if s == Border {
+			case Border:
 				c := color.New(b.c.borderColor)
 				c.Printf(" %s", b.printChar(s))
 			}
@@ -140,18 +135,114 @@ func (b *board) Display() {
 	d.Printf("    A B C D E F G H I J")
 	d.DisableColor()
 	fmt.Println()
+}
 
+type point struct {
+	x, y int
+}
+
+func (b *board) drawBorder(p point, pos pos) {
+	//
+	//    XXX
+	//    XOX
+	//    XXX
+	//
+	vec := []point{
+		{-1, 0},
+		{-1, -1},
+		{0, 1},
+		{1, 1},
+		{1, 0},
+		{-1, 1},
+		{0, -1},
+		{1, -1},
+	}
+
+	for _, v := range vec {
+		dx := p.x + v.x
+		dy := p.y + v.y
+		if pos == Left {
+			if dx < 0 || dx >= boardWidth+delimiter || dy < 0 || dy >= maxY {
+				continue
+			}
+		}
+		if pos == Right {
+			if dx < boardWidth+delimiter+1 || dx >= maxX || dy < 0 || dy >= maxY {
+				continue
+			}
+		}
+
+		if b.b[dx][dy] != Ship && b.b[dx][dy] != Hit {
+			b.b[dx][dy] = Border
+		}
+	}
+}
+
+func (b *board) searchElement(x, y int, p *[]point, pos pos) {
+	vec := []point{
+		{-1, 0},
+		{0, 1},
+		{1, 0},
+		{0, -1},
+	}
+
+	for _, i := range *p {
+		if i.x == x && i.y == y {
+			return
+		}
+	}
+
+	*p = append(*p, point{x, y})
+	connections := []point{}
+
+	for _, v := range vec {
+		dx := x + v.x
+		dy := y + v.y
+		if pos == Left {
+			if dx < 0 || dx >= boardWidth+delimiter || dy < 0 || dy >= maxY {
+				continue
+			}
+		}
+		if pos == Right {
+			if dx < boardWidth+delimiter || dx >= maxX || dy < 0 || dy >= maxY {
+				continue
+			}
+		}
+		if b.b[x+v.x][y+v.y] == Ship || b.b[x+v.x][y+v.y] == Hit {
+			connections = append(connections, point{dx, dy})
+		}
+	}
+
+	// Run the method recursively on each linked element
+	for _, c := range connections {
+		b.searchElement(c.x, c.y, p, pos)
+	}
+}
+
+func (b *board) CreateBorder(coord string, pos pos) {
+	x, y := b.stringCoordToInt(coord)
+
+	if pos == Right {
+		x = x + boardWidth + delimiter
+	}
+
+	p := []point{}
+	b.searchElement(x, y, &p, pos)
+
+	for _, i := range p {
+		b.drawBorder(i, pos)
+	}
 }
 
 func (b *board) HitOrMiss(p pos, coord string) state {
-	x, y := b.stringCoordToInt(coord)
-
 	var s state
+
+	x, y := b.stringCoordToInt(coord)
 
 	if p == Left {
 		s = b.b[x][y]
 	} else {
-		s = b.b[x+boardWidth+delimiter-1][y]
+		s = b.b[x+boardWidth+delimiter][y]
 	}
 
 	if s == Ship {

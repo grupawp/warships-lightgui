@@ -97,7 +97,7 @@ func NewConfig() *config {
 		rulerTextColor: color.BgBlue,
 		shipChar:       'X',
 		shipColor:      color.FgCyan,
-		borderChar:     'x',
+		borderChar:     '.',
 		borderColor:    color.FgRed,
 		hitChar:        'X',
 		hitColor:       color.FgRed,
