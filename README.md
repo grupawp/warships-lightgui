@@ -93,6 +93,12 @@ const (
 ### After create a *board* object, you can use the following methods:
 
 ```go
+func (board) HitOrMiss(p pos, coord string) state
+```
+
+- **HitOrMiss()** checks if a state at the coord is a Ship, then change to Hit and return Hit. Else (not a Ship), change to Miss and return Miss
+
+```go
 func (board) Set(p pos, coord string, s state)
 ```
 

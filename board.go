@@ -143,29 +143,55 @@ func (b *board) Display() {
 
 }
 
-func (b *board) Set(p pos, coord string, s state) {
+func (b *board) HitOrMiss(p pos, coord string) state {
+	x, y := b.stringCoordToInt(coord)
+
+	var s state
+
+	if p == Left {
+		s = b.b[x][y]
+	} else {
+		s = b.b[x+boardWidth+delimiter][y]
+	}
+
+	if s == Ship {
+		b.Set(p, coord, Hit)
+		return Hit
+	} else {
+		b.Set(p, coord, Miss)
+		return Miss
+	}
+}
+
+func (b *board) stringCoordToInt(coord string) (int, int) {
 	if len(coord) != 2 && len(coord) != 3 {
-		return
+		return 0, 0
 	}
 
 	x := strings.ToUpper(coord)[0] - 'A'
 
 	if x > 10 {
-		return
+		return 0, 0
 	}
 
 	y, err := strconv.Atoi(coord[1:])
 	if err != nil {
-		return
+		return 0, 0
 	}
 
 	y--
 
 	if y < 0 || y > maxY-1 {
-		return
+		return 0, 0
 	}
 
 	x++
+
+	return int(x), y
+}
+
+func (b *board) Set(p pos, coord string, s state) {
+	x, y := b.stringCoordToInt(coord)
 
 	if p == Left {
 		b.b[x][y] = s
