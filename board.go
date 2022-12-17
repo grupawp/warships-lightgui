@@ -30,7 +30,7 @@ const (
 	delimiter   = 5
 	boardWidth  = 10
 	boardHeight = 10
-	maxX        = boardWidth + delimiter + boardWidth
+	maxX        = boardWidth + delimiter + boardWidth + 1
 	maxY        = boardHeight
 )
 
@@ -133,11 +133,11 @@ func (b *board) Display() {
 	d.EnableColor()
 	d.Printf("   A B C D E F G H I J")
 	d.DisableColor()
-	for i := 0; i < delimiter; i++ {
-		fmt.Printf("  ")
+	for i := 0; i < (delimiter*2)-3; i++ {
+		fmt.Printf(" ")
 	}
 	d.EnableColor()
-	d.Printf(" A B C D E F G H I J")
+	d.Printf("    A B C D E F G H I J")
 	d.DisableColor()
 	fmt.Println()
 
@@ -151,7 +151,7 @@ func (b *board) HitOrMiss(p pos, coord string) state {
 	if p == Left {
 		s = b.b[x][y]
 	} else {
-		s = b.b[x+boardWidth+delimiter][y]
+		s = b.b[x+boardWidth+delimiter-1][y]
 	}
 
 	if s == Ship {
