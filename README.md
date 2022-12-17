@@ -93,10 +93,13 @@ const (
 ### After create a *board* object, you can use the following methods:
 
 ```go
-func (board) CreateBorder(coord string, p pos) {
+func (board) CreateBorder(p pos, coord string) {
 ```
 
-- **CreateBorder()** creates border around (sunken) ship
+- **CreateBorder()** creates a border around (sunken) ship
+    - p: Left or Right board
+    - coord: any element of the ship
+
 
 ```go
 func (board) HitOrMiss(p pos, coord string) state

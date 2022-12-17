@@ -82,7 +82,7 @@ func (b *board) searchElement(x, y int, points *[]point, p pos) {
 	}
 }
 
-func (b *board) CreateBorder(coord string, p pos) {
+func (b *board) CreateBorder(p pos, coord string) {
 	x, y := b.stringCoordToInt(coord)
 
 	if p == Right {
