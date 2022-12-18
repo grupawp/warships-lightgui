@@ -40,13 +40,13 @@ func (b *board) Display() {
 
 	d := color.New(b.c.rulerTextColor)
 	d.EnableColor()
-	d.Printf("   A B C D E F G H I J")
+	d.Printf("   A B C D E F G H I J ")
 	d.DisableColor()
 	for i := 0; i < (delimiter*2)-3; i++ {
 		fmt.Printf(" ")
 	}
 	d.EnableColor()
-	d.Printf("    A B C D E F G H I J")
+	d.Printf("   A B C D E F G H I J ")
 	d.DisableColor()
 	fmt.Println()
 }
