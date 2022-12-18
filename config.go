@@ -93,7 +93,7 @@ func (c *config) RulerTextColor(col color.Attribute) customizer {
 func NewConfig() *config {
 	return &config{
 		emptyChar:      ' ',
-		emptyColor:     color.BgBlack,
+		emptyColor:     color.Reset,
 		rulerTextColor: color.BgBlue,
 		shipChar:       'X',
 		shipColor:      color.FgCyan,

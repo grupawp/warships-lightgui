@@ -20,7 +20,8 @@ func (b *board) Display() {
 				c := color.New(b.c.rulerTextColor)
 				c.Printf("%2d", y+1)
 			case Empty:
-				fmt.Printf("  ")
+				c := color.New(b.c.emptyColor)
+				c.Printf(" %s", b.printChar(s))
 			case Hit:
 				c := color.New(b.c.hitColor)
 				c.Printf(" %s", b.printChar(s))
