@@ -101,10 +101,13 @@ func (b *board) HitOrMiss(p pos, coord string) state {
 		s = b.b[x+boardWidth+delimiter][y]
 	}
 
-	if s == Ship {
+	switch s {
+	case Ship:
 		b.Set(p, coord, Hit)
 		return Hit
-	} else {
+	case Hit:
+		return Hit
+	default:
 		b.Set(p, coord, Miss)
 		return Miss
 	}
@@ -141,10 +144,30 @@ func (b *board) Set(p pos, coord string, s state) {
 	x, y := b.stringCoordToInt(coord)
 
 	if p == Left {
-		b.b[x][y] = s
-	} else {
-		b.b[x+boardWidth+delimiter][y] = s
+		switch s {
+		case Miss:
+			if b.b[x][y] != Empty {
+				return
+			}
+		case Hit:
+			if b.b[x][y] != Ship {
+				return
+			}
+		case Ship:
+			if b.b[x][y] != Empty {
+				return
+			}
+		}
 	}
+
+	if p == Right {
+		x = x + boardWidth + delimiter
+		if b.b[x][y] != Empty {
+			return
+		}
+	}
+
+	b.b[x][y] = s
 }
 
 func New(c *config) *board {
