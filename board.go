@@ -32,12 +32,12 @@ const (
 	maxY        = boardHeight
 )
 
-type board struct {
+type Board struct {
 	b [maxX][maxY]state
 	c *config
 }
 
-func (b *board) printChar(s state) string {
+func (b *Board) printChar(s state) string {
 	switch s {
 	case Empty:
 		return string(b.c.emptyChar)
@@ -56,13 +56,13 @@ func (b *board) printChar(s state) string {
 	}
 }
 
-func (b *board) Import(coords []string) {
+func (b *Board) Import(coords []string) {
 	for _, c := range coords {
 		b.Set(Left, c, Ship)
 	}
 }
 
-func (b *board) Export(p pos) []string {
+func (b *Board) Export(p pos) []string {
 	var result []string
 
 	if p == Left {
@@ -90,7 +90,7 @@ func (b *board) Export(p pos) []string {
 	return result
 }
 
-func (b *board) HitOrMiss(p pos, coord string) state {
+func (b *Board) HitOrMiss(p pos, coord string) state {
 	var s state
 
 	x, y := b.stringCoordToInt(coord)
@@ -113,7 +113,7 @@ func (b *board) HitOrMiss(p pos, coord string) state {
 	}
 }
 
-func (b *board) stringCoordToInt(coord string) (int, int) {
+func (b *Board) stringCoordToInt(coord string) (int, int) {
 	if len(coord) != 2 && len(coord) != 3 {
 		return 0, 0
 	}
@@ -140,7 +140,7 @@ func (b *board) stringCoordToInt(coord string) (int, int) {
 	return int(x), y
 }
 
-func (b *board) Set(p pos, coord string, s state) {
+func (b *Board) Set(p pos, coord string, s state) {
 	x, y := b.stringCoordToInt(coord)
 
 	if p == Left {
@@ -170,8 +170,8 @@ func (b *board) Set(p pos, coord string, s state) {
 	b.b[x][y] = s
 }
 
-func New(c *config) *board {
-	b := &board{
+func New(c *config) *Board {
+	b := &Board{
 		c: c,
 	}
 

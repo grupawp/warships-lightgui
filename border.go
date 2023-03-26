@@ -4,7 +4,7 @@ type point struct {
 	x, y int
 }
 
-func (b *board) drawBorder(p point, position pos) {
+func (b *Board) drawBorder(p point, position pos) {
 	//
 	//    XXX
 	//    XOX
@@ -41,7 +41,7 @@ func (b *board) drawBorder(p point, position pos) {
 	}
 }
 
-func (b *board) searchElement(x, y int, points *[]point, p pos) {
+func (b *Board) searchElement(x, y int, points *[]point, p pos) {
 	vec := []point{
 		{-1, 0},
 		{0, 1},
@@ -82,7 +82,7 @@ func (b *board) searchElement(x, y int, points *[]point, p pos) {
 	}
 }
 
-func (b *board) CreateBorder(p pos, coord string) {
+func (b *Board) CreateBorder(p pos, coord string) {
 	x, y := b.stringCoordToInt(coord)
 
 	if p == Right {

@@ -6,7 +6,7 @@ import (
 	"github.com/fatih/color"
 )
 
-func (b *board) Display() {
+func (b *Board) Display() {
 	const (
 		clearScreen = "\033[H\033[2J"
 	)
