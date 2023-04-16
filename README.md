@@ -1,4 +1,4 @@
-# Warships-LightGUI is a lightweight GUI to the training game 'Warships Online', created for the Akademia Programowania PJATK
+# Warships-LightGUI
 
 <img src="doc/warships.png" width=50%>
 
