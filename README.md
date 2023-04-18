@@ -31,8 +31,7 @@ board := gui.New(
         HitColor(color.FgRed).
         BorderColor(color.BgRed).
         RulerTextColor(color.BgYellow).
-        NewConfig()
-)
+        NewConfig())
 
 board.Display()
 ```
