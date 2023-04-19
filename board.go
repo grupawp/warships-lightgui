@@ -1,7 +1,13 @@
+/*
+Warships-LightGUI provides an easy to use graphical user interface
+for the `Warships Online` game.
+*/
 package board
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 )
@@ -9,8 +15,8 @@ import (
 type pos int
 
 const (
-	Left pos = iota
-	Right
+	Left  pos = iota // indicates player's board (on the left side)
+	Right            // indicates enemy's board (on the right side)
 )
 
 type state int
@@ -20,7 +26,7 @@ const (
 	Hit
 	Miss
 	Ship
-	Border
+	Border // border around a sunken ship
 	Ruler
 )
 
@@ -32,6 +38,8 @@ const (
 	maxY        = boardHeight
 )
 
+// Board represents a game board, including both player's (Left) 
+// and enemy's (Right) sides.
 type Board struct {
 	b [maxX][maxY]state
 	c *config
@@ -56,12 +64,18 @@ func (b *Board) printChar(s state) string {
 	}
 }
 
+// Import imports player's ships from a slice of coordinates
+// (as returned by the game server) and places them on the
+// Left board.
 func (b *Board) Import(coords []string) {
 	for _, c := range coords {
 		b.Set(Left, c, Ship)
 	}
 }
 
+// Export exports ships from either Left (player's) or Right (enemy's) 
+// board. The return value is a slice of ship coordinates (using format 
+// expected by the game server).
 func (b *Board) Export(p pos) []string {
 	var result []string
 
@@ -90,10 +104,29 @@ func (b *Board) Export(p pos) []string {
 	return result
 }
 
+/*
+HitOrMiss updates and returns the state of a coordinate on the board,
+depending on the previous state:
+	- Empty -> Miss
+	- Ship, Hit  -> Hit
+
+It returns Miss if the coordinate is invalid.
+
+Parameters:
+    - p (pos): Left or Right board
+    - coord (string): a string representing the coordinate (e.g. "A1", "B2")
+
+Returns:
+  - s (state): updated state value (Empty, Miss, or Hit)
+*/
 func (b *Board) HitOrMiss(p pos, coord string) state {
 	var s state
 
-	x, y := b.stringCoordToInt(coord)
+	x, y, err := b.stringCoordToInt(coord)
+	if err != nil {
+		log.Println(err)
+		return Miss
+	}
 
 	if p == Left {
 		s = b.b[x][y]
@@ -113,48 +146,67 @@ func (b *Board) HitOrMiss(p pos, coord string) state {
 	}
 }
 
-func (b *Board) stringCoordToInt(coord string) (int, int) {
+var errInvalidCoord = errors.New("invalid coordinate")
+
+func (b *Board) stringCoordToInt(coord string) (int, int, error) {
 	if len(coord) != 2 && len(coord) != 3 {
-		return 0, 0
+		return 0, 0, fmt.Errorf("%w: %s", errInvalidCoord, coord)
 	}
 
 	x := strings.ToUpper(coord)[0] - 'A'
 
 	if x > 10 {
-		return 0, 0
+		return 0, 0, errInvalidCoord
 	}
 
 	y, err := strconv.Atoi(coord[1:])
 	if err != nil {
-		return 0, 0
+		return 0, 0, errInvalidCoord
 	}
 
 	y--
 
 	if y < 0 || y > maxY-1 {
-		return 0, 0
+		return 0, 0, errInvalidCoord
 	}
 
 	x++
 
-	return int(x), y
+	return int(x), y, nil
 }
 
+/*
+Set updates the state of a coordinate on the board. 
+
+For the Left board, the function validates the state of the coordinate based on the following logic: 
+	- If the state is Miss and the previous state is not Empty, it does not update the state.
+	- If the state is Hit and the previous state is not Ship, it does not update the state.
+	- If the state is Ship and the previous state is not Empty, it does not update the state.
+
+For the Right board, the function does not update the state if the previous state is not Empty.
+
+If the coordinate is invalid, the function does not update the state.
+
+Parameters:
+	- p (pos): Left or Right board
+    - coord (string): a string representing the coordinate (e.g. "A1", "B2")
+    - s (state): the state to update the coordinate to (Empty, Miss, or Ship)
+*/
 func (b *Board) Set(p pos, coord string, s state) {
-	x, y := b.stringCoordToInt(coord)
+	x, y, err := b.stringCoordToInt(coord)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
 	if p == Left {
 		switch s {
-		case Miss:
+		case Miss, Ship:
 			if b.b[x][y] != Empty {
 				return
 			}
 		case Hit:
 			if b.b[x][y] != Ship {
-				return
-			}
-		case Ship:
-			if b.b[x][y] != Empty {
 				return
 			}
 		}
@@ -170,6 +222,7 @@ func (b *Board) Set(p pos, coord string, s state) {
 	b.b[x][y] = s
 }
 
+// New returns a new Board.
 func New(c *config) *Board {
 	b := &Board{
 		c: c,

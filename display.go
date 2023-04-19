@@ -6,6 +6,7 @@ import (
 	"github.com/fatih/color"
 )
 
+// Display clears the terminal and prints the board.
 func (b *Board) Display() {
 	const (
 		clearScreen = "\033[H\033[2J"
