@@ -1,5 +1,7 @@
 package board
 
+import "log"
+
 type point struct {
 	x, y int
 }
@@ -83,8 +85,15 @@ func (b *Board) searchElement(x, y int, points *[]point, p pos) {
 	}
 }
 
+// CreateBorder creates a border around a (sunken) ship, to indicate
+// which coordinates cannot contain a ship segment and can be safely
+// ignored.
 func (b *Board) CreateBorder(p pos, coord string) {
-	x, y := b.stringCoordToInt(coord)
+	x, y, err := b.stringCoordToInt(coord)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
 	if p == Right {
 		x = x + boardWidth + delimiter
