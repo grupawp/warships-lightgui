@@ -18,29 +18,29 @@ func (b *Board) Display() {
 		for x := 0; x < maxX; x++ {
 			switch s := b.b[x][y]; s {
 			case Ruler:
-				c := color.New(b.c.rulerTextColor)
+				c := color.New(b.c.RulerTextColor)
 				c.Printf("%2d", y+1)
 			case Empty:
-				c := color.New(b.c.emptyColor)
+				c := color.New(b.c.EmptyColor)
 				c.Printf(" %s", b.printChar(s))
 			case Hit:
-				c := color.New(b.c.hitColor)
+				c := color.New(b.c.HitColor)
 				c.Printf(" %s", b.printChar(s))
 			case Ship:
-				c := color.New(b.c.shipColor)
+				c := color.New(b.c.ShipColor)
 				c.Printf(" %s", b.printChar(s))
 			case Miss:
-				c := color.New(b.c.missColor)
+				c := color.New(b.c.MissColor)
 				c.Printf(" %s", b.printChar(s))
 			case Border:
-				c := color.New(b.c.borderColor)
+				c := color.New(b.c.BorderColor)
 				c.Printf(" %s", b.printChar(s))
 			}
 		}
 		fmt.Printf("\n")
 	}
 
-	d := color.New(b.c.rulerTextColor)
+	d := color.New(b.c.RulerTextColor)
 	d.EnableColor()
 	d.Printf("   A B C D E F G H I J ")
 	d.DisableColor()

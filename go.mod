@@ -1,4 +1,4 @@
-module github.com/grupawp/warships-lightgui
+module github.com/grupawp/warships-lightgui/v2
 
 go 1.19
 

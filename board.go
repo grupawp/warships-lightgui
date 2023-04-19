@@ -38,25 +38,25 @@ const (
 	maxY        = boardHeight
 )
 
-// Board represents a game board, including both player's (Left) 
+// Board represents a game board, including both player's (Left)
 // and enemy's (Right) sides.
 type Board struct {
 	b [maxX][maxY]state
-	c *config
+	c *Config
 }
 
 func (b *Board) printChar(s state) string {
 	switch s {
 	case Empty:
-		return string(b.c.emptyChar)
+		return string(b.c.EmptyChar)
 	case Ship:
-		return string(b.c.shipChar)
+		return string(b.c.ShipChar)
 	case Hit:
-		return string(b.c.hitChar)
+		return string(b.c.HitChar)
 	case Miss:
-		return string(b.c.missChar)
+		return string(b.c.MissChar)
 	case Border:
-		return string(b.c.borderChar)
+		return string(b.c.BorderChar)
 	case Ruler:
 		return ""
 	default:
@@ -73,8 +73,8 @@ func (b *Board) Import(coords []string) {
 	}
 }
 
-// Export exports ships from either Left (player's) or Right (enemy's) 
-// board. The return value is a slice of ship coordinates (using format 
+// Export exports ships from either Left (player's) or Right (enemy's)
+// board. The return value is a slice of ship coordinates (using format
 // expected by the game server).
 func (b *Board) Export(p pos) []string {
 	var result []string
@@ -107,14 +107,14 @@ func (b *Board) Export(p pos) []string {
 /*
 HitOrMiss updates and returns the state of a coordinate on the board,
 depending on the previous state:
-	- Empty -> Miss
-	- Ship, Hit  -> Hit
+  - Empty -> Miss
+  - Ship, Hit  -> Hit
 
 It returns Miss if the coordinate is invalid.
 
 Parameters:
-    - p (pos): Left or Right board
-    - coord (string): a string representing the coordinate (e.g. "A1", "B2")
+  - p (pos): Left or Right board
+  - coord (string): a string representing the coordinate (e.g. "A1", "B2")
 
 Returns:
   - s (state): updated state value (Empty, Miss, or Hit)
@@ -176,21 +176,21 @@ func (b *Board) stringCoordToInt(coord string) (int, int, error) {
 }
 
 /*
-Set updates the state of a coordinate on the board. 
+Set updates the state of a coordinate on the board.
 
-For the Left board, the function validates the state of the coordinate based on the following logic: 
-	- If the state is Miss and the previous state is not Empty, it does not update the state.
-	- If the state is Hit and the previous state is not Ship, it does not update the state.
-	- If the state is Ship and the previous state is not Empty, it does not update the state.
+For the Left board, the function validates the state of the coordinate based on the following logic:
+  - If the state is Miss and the previous state is not Empty, it does not update the state.
+  - If the state is Hit and the previous state is not Ship, it does not update the state.
+  - If the state is Ship and the previous state is not Empty, it does not update the state.
 
 For the Right board, the function does not update the state if the previous state is not Empty.
 
 If the coordinate is invalid, the function does not update the state.
 
 Parameters:
-	- p (pos): Left or Right board
-    - coord (string): a string representing the coordinate (e.g. "A1", "B2")
-    - s (state): the state to update the coordinate to (Empty, Miss, or Ship)
+  - p (pos): Left or Right board
+  - coord (string): a string representing the coordinate (e.g. "A1", "B2")
+  - s (state): the state to update the coordinate to (Empty, Miss, or Ship)
 */
 func (b *Board) Set(p pos, coord string, s state) {
 	x, y, err := b.stringCoordToInt(coord)
@@ -223,7 +223,7 @@ func (b *Board) Set(p pos, coord string, s state) {
 }
 
 // New returns a new Board.
-func New(c *config) *Board {
+func New(c *Config) *Board {
 	b := &Board{
 		c: c,
 	}

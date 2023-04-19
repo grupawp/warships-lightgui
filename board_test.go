@@ -43,11 +43,10 @@ func ExampleNew_simple() {
 }
 
 func ExampleNew_advanced() {
-	New(
-		NewConfig().
-			HitChar('#').
-			HitColor(color.FgRed).
-			BorderColor(color.BgRed).
-			RulerTextColor(color.BgYellow).
-			NewConfig())
+	cfg := NewConfig()
+	cfg.HitChar = '#'
+	cfg.HitColor = color.FgRed
+	cfg.BorderColor = color.BgRed
+	cfg.RulerTextColor = color.BgYellow
+	New(cfg)
 }
