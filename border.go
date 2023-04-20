@@ -39,7 +39,7 @@ func (b *Board) drawBorder(p point, position pos) {
 
 		prev := b.b[dx][dy]
 		if !(prev == Ship || prev == Hit || prev == Miss) { // don't overwrite already marked
-			b.b[dx][dy] = Border
+			b.b[dx][dy] = border
 		}
 	}
 }

@@ -7,7 +7,6 @@ package board
 import (
 	"errors"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 )
@@ -22,12 +21,12 @@ const (
 type state int
 
 const (
-	Empty state = iota
+	empty state = iota
 	Hit
 	Miss
 	Ship
-	Border // border around a sunken ship
-	Ruler
+	border
+	ruler
 )
 
 const (
@@ -47,7 +46,7 @@ type Board struct {
 
 func (b *Board) printChar(s state) string {
 	switch s {
-	case Empty:
+	case empty:
 		return string(b.c.EmptyChar)
 	case Ship:
 		return string(b.c.ShipChar)
@@ -55,22 +54,30 @@ func (b *Board) printChar(s state) string {
 		return string(b.c.HitChar)
 	case Miss:
 		return string(b.c.MissChar)
-	case Border:
+	case border:
 		return string(b.c.BorderChar)
-	case Ruler:
+	case ruler:
 		return ""
 	default:
 		return string('.')
 	}
 }
 
-// Import imports player's ships from a slice of coordinates
-// (as returned by the game server) and places them on the
-// Left board.
-func (b *Board) Import(coords []string) {
+/*
+Import imports player's ships from a slice of coordinates
+(as returned by the game server) and places them on the
+Left board.
+
+If any of the coordinates is invalid, the function returnes ErrInvalidCoord.
+*/
+func (b *Board) Import(coords []string) error {
 	for _, c := range coords {
-		b.Set(Left, c, Ship)
+		err := b.Set(Left, c, Ship)
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 // Export exports ships from either Left (player's) or Right (enemy's)
@@ -110,7 +117,7 @@ depending on the previous state:
   - Empty -> Miss
   - Ship, Hit  -> Hit
 
-It returns Miss if the coordinate is invalid.
+If the coordinate is invalid, the function returnes ErrInvalidCoord.
 
 Parameters:
   - p (pos): Left or Right board
@@ -119,13 +126,12 @@ Parameters:
 Returns:
   - s (state): updated state value (Empty, Miss, or Hit)
 */
-func (b *Board) HitOrMiss(p pos, coord string) state {
+func (b *Board) HitOrMiss(p pos, coord string) (state, error) {
 	var s state
 
 	x, y, err := b.stringCoordToInt(coord)
 	if err != nil {
-		log.Println(err)
-		return Miss
+		return empty, err
 	}
 
 	if p == Left {
@@ -137,37 +143,37 @@ func (b *Board) HitOrMiss(p pos, coord string) state {
 	switch s {
 	case Ship:
 		b.Set(p, coord, Hit)
-		return Hit
+		return Hit, nil
 	case Hit:
-		return Hit
+		return Hit, nil
 	default:
 		b.Set(p, coord, Miss)
-		return Miss
+		return Miss, nil
 	}
 }
 
-var errInvalidCoord = errors.New("invalid coordinate")
+var ErrInvalidCoord = errors.New("invalid coordinate")
 
 func (b *Board) stringCoordToInt(coord string) (int, int, error) {
 	if len(coord) != 2 && len(coord) != 3 {
-		return 0, 0, fmt.Errorf("%w: %s", errInvalidCoord, coord)
+		return 0, 0, ErrInvalidCoord
 	}
 
 	x := strings.ToUpper(coord)[0] - 'A'
 
 	if x > 10 {
-		return 0, 0, errInvalidCoord
+		return 0, 0, ErrInvalidCoord
 	}
 
 	y, err := strconv.Atoi(coord[1:])
 	if err != nil {
-		return 0, 0, errInvalidCoord
+		return 0, 0, ErrInvalidCoord
 	}
 
 	y--
 
 	if y < 0 || y > maxY-1 {
-		return 0, 0, errInvalidCoord
+		return 0, 0, ErrInvalidCoord
 	}
 
 	x++
@@ -185,41 +191,41 @@ For the Left board, the function validates the state of the coordinate based on 
 
 For the Right board, the function does not update the state if the previous state is not Empty.
 
-If the coordinate is invalid, the function does not update the state.
+If the coordinate is invalid, the function returnes ErrInvalidCoord.
 
 Parameters:
   - p (pos): Left or Right board
   - coord (string): a string representing the coordinate (e.g. "A1", "B2")
   - s (state): the state to update the coordinate to (Empty, Miss, or Ship)
 */
-func (b *Board) Set(p pos, coord string, s state) {
+func (b *Board) Set(p pos, coord string, s state) error {
 	x, y, err := b.stringCoordToInt(coord)
 	if err != nil {
-		log.Println(err)
-		return
+		return err
 	}
 
 	if p == Left {
 		switch s {
 		case Miss, Ship:
-			if b.b[x][y] != Empty {
-				return
+			if b.b[x][y] != empty {
+				return nil
 			}
 		case Hit:
 			if b.b[x][y] != Ship {
-				return
+				return nil
 			}
 		}
 	}
 
 	if p == Right {
 		x = x + boardWidth + delimiter
-		if b.b[x][y] != Empty {
-			return
+		if b.b[x][y] != empty {
+			return nil
 		}
 	}
 
 	b.b[x][y] = s
+	return nil
 }
 
 // New returns a new Board.
@@ -229,8 +235,8 @@ func New(c *Config) *Board {
 	}
 
 	for y := maxY - 1; y >= 0; y-- {
-		b.b[0][y] = Ruler
-		b.b[boardWidth+delimiter][y] = Ruler
+		b.b[0][y] = ruler
+		b.b[boardWidth+delimiter][y] = ruler
 	}
 
 	return b
