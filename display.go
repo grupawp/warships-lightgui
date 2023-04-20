@@ -17,10 +17,10 @@ func (b *Board) Display() {
 	for y := maxY - 1; y >= 0; y-- {
 		for x := 0; x < maxX; x++ {
 			switch s := b.b[x][y]; s {
-			case Ruler:
+			case ruler:
 				c := color.New(b.c.RulerTextColor)
 				c.Printf("%2d", y+1)
-			case Empty:
+			case empty:
 				c := color.New(b.c.EmptyColor)
 				c.Printf(" %s", b.printChar(s))
 			case Hit:
@@ -32,7 +32,7 @@ func (b *Board) Display() {
 			case Miss:
 				c := color.New(b.c.MissColor)
 				c.Printf(" %s", b.printChar(s))
-			case Border:
+			case border:
 				c := color.New(b.c.BorderColor)
 				c.Printf(" %s", b.printChar(s))
 			}

@@ -9,13 +9,16 @@ import (
 func ExampleBoard_Import() {
 	board := New(NewConfig())
 	coords := []string{"A1", "A2", "A3"}
-	board.Import(coords)
+	err := board.Import(coords)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func ExampleBoard_Export() {
 	board := New(NewConfig())
 	coords := []string{"A1", "A2", "A3"}
-	board.Import(coords)
+	_ = board.Import(coords)
 	exported := board.Export(Left)
 	fmt.Println(exported)
 	// Output: [A3 A2 A1]
@@ -23,18 +26,27 @@ func ExampleBoard_Export() {
 
 func ExampleBoard_Set_enemy() {
 	board := New(NewConfig())
-	board.Set(Right, "C3", Hit)
+	err := board.Set(Right, "C3", Hit)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func ExampleBoard_Set_player() {
 	board := New(NewConfig())
-	board.Set(Left, "A1", Ship)
+	err := board.Set(Left, "A1", Ship)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func ExampleBoard_HitOrMiss() {
 	board := New(NewConfig())
-	board.Set(Left, "A1", Ship)
-	board.HitOrMiss(Left, "A1")
+	_ = board.Set(Left, "A1", Ship)
+	_, err := board.HitOrMiss(Left, "A1")
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func ExampleNew_simple() {
