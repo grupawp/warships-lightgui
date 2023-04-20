@@ -12,13 +12,13 @@ http://github.com/grupawp/warships-gui
 ## Installation
 
 ```
-go get github.com/grupawp/warships-lightgui
+go get github.com/grupawp/warships-lightgui/v2
 ```
 
 ## Quick Start
 
 To initialize the *board* use the **New()** method. **NewConfig()** will 
-load the default configuration.
+create a default configuration.
 
 ```go
 board := gui.New(gui.NewConfig())
@@ -26,16 +26,15 @@ board.Display()
 ```
 
 To customize colours and characters used to indicate ships, misses, etc, 
-use methods available on the `config` instance. 
+create and pass custom `Config`. 
 
 ```go
-board := gui.New(
-    gui.ConfigParams().
-        HitChar('#').
-        HitColor(color.FgRed).
-        BorderColor(color.BgRed).
-        RulerTextColor(color.BgYellow).
-        NewConfig())
+cfg := NewConfig()
+cfg.HitChar = '#'
+cfg.HitColor = color.FgRed
+cfg.BorderColor = color.BgRed
+cfg.RulerTextColor = color.BgYellow
+New(cfg)
 board.Display()
 ```
 
