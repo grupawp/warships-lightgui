@@ -39,4 +39,4 @@ board.Display()
 ```
 
 ## Documentation
-https://pkg.go.dev/github.com/grupawp/warships-lightgui
+https://pkg.go.dev/github.com/grupawp/warships-lightgui/v2
